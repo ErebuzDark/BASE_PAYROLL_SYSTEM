@@ -139,7 +139,7 @@ export const MOCK_EMPLOYEES = [
     pagibigNumber: '6789-0123-4567',
     tinNumber: '678-901-234-000',
     bankAccount: 'BPI - 6789012345',
-    avatar: null,
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkNMsrc3RMIMtRsfMPjnaiDkovb-lF-4VsEA&s",
   },
 ]
 
