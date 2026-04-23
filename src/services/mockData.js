@@ -122,6 +122,25 @@ export const MOCK_EMPLOYEES = [
     bankAccount: 'BPI - 6789012345',
     avatar: null,
   },
+  {
+    id: 'EMP-007',
+    firstName: 'Varon',
+    lastName: 'Gentica',
+    email: 'varongentica05@gmail.com',
+    phone: '+63 966 148 3596',
+    position: 'Junior Front-End Developer',
+    department: 'Information Technology',
+    employmentType: 'Regular',
+    status: 'Active',
+    hireDate: '2025-06-29',
+    basicSalary: 24000,
+    sssNumber: '34-6789012-3',
+    philhealthNumber: '12-890123456-7',
+    pagibigNumber: '6789-0123-4567',
+    tinNumber: '678-901-234-000',
+    bankAccount: 'BPI - 6789012345',
+    avatar: null,
+  },
 ]
 
 export const MOCK_DEPARTMENTS = [
@@ -131,6 +150,7 @@ export const MOCK_DEPARTMENTS = [
   { id: 'dept-4', name: 'Design', headCount: 1, budget: 120000 },
   { id: 'dept-5', name: 'Finance', headCount: 1, budget: 180000 },
   { id: 'dept-6', name: 'Sales', headCount: 1, budget: 250000 },
+  { id: 'dept-7', name: 'Information Technology', headCount: 1, budget: 1000000 },
 ]
 
 export const MOCK_ATTENDANCE = [
@@ -142,6 +162,7 @@ export const MOCK_ATTENDANCE = [
   { id: 'att-6', employeeId: 'EMP-003', date: '2025-04-01', timeIn: '08:00', timeOut: '17:00', status: 'Present', hoursWorked: 9 },
   { id: 'att-7', employeeId: 'EMP-004', date: '2025-04-01', timeIn: '09:00', timeOut: '18:00', status: 'Present', hoursWorked: 9 },
   { id: 'att-8', employeeId: 'EMP-005', date: '2025-04-01', timeIn: null, timeOut: null, status: 'On Leave', hoursWorked: 0 },
+  { id: 'att-9', employeeId: 'EMP-007', date: '2025-04-01', timeIn: '7:30', timeOut: '4:30', status: 'Present', hoursWorked: 9 },
 ]
 
 export const MOCK_LEAVES = [
@@ -320,3 +341,51 @@ export let MOCK_COMPANY_SETTINGS = {
   workHoursPerDay: 8,
   otRateMultiplier: 1.25,
 }
+
+/**
+ * Leave Balances — per-employee leave credit allocations
+ */
+export const MOCK_LEAVE_BALANCES = [
+  // EMP-001 Maria Santos
+  { employeeId: 'EMP-001', type: 'Vacation Leave', total: 15, used: 3, remaining: 12 },
+  { employeeId: 'EMP-001', type: 'Sick Leave', total: 15, used: 2, remaining: 13 },
+  { employeeId: 'EMP-001', type: 'Emergency Leave', total: 5, used: 0, remaining: 5 },
+  { employeeId: 'EMP-001', type: 'Maternity Leave', total: 105, used: 0, remaining: 105 },
+  { employeeId: 'EMP-001', type: 'Paternity Leave', total: 0, used: 0, remaining: 0 },
+  // EMP-002 Juan dela Cruz
+  { employeeId: 'EMP-002', type: 'Vacation Leave', total: 15, used: 5, remaining: 10 },
+  { employeeId: 'EMP-002', type: 'Sick Leave', total: 15, used: 1, remaining: 14 },
+  { employeeId: 'EMP-002', type: 'Emergency Leave', total: 5, used: 1, remaining: 4 },
+  { employeeId: 'EMP-002', type: 'Maternity Leave', total: 0, used: 0, remaining: 0 },
+  { employeeId: 'EMP-002', type: 'Paternity Leave', total: 7, used: 0, remaining: 7 },
+  // EMP-003 Ana Reyes
+  { employeeId: 'EMP-003', type: 'Vacation Leave', total: 15, used: 4, remaining: 11 },
+  { employeeId: 'EMP-003', type: 'Sick Leave', total: 15, used: 0, remaining: 15 },
+  { employeeId: 'EMP-003', type: 'Emergency Leave', total: 5, used: 2, remaining: 3 },
+  { employeeId: 'EMP-003', type: 'Maternity Leave', total: 105, used: 0, remaining: 105 },
+  { employeeId: 'EMP-003', type: 'Paternity Leave', total: 0, used: 0, remaining: 0 },
+  // EMP-004 Carlo Bautista
+  { employeeId: 'EMP-004', type: 'Vacation Leave', total: 10, used: 0, remaining: 10 },
+  { employeeId: 'EMP-004', type: 'Sick Leave', total: 10, used: 0, remaining: 10 },
+  { employeeId: 'EMP-004', type: 'Emergency Leave', total: 3, used: 0, remaining: 3 },
+  { employeeId: 'EMP-004', type: 'Maternity Leave', total: 0, used: 0, remaining: 0 },
+  { employeeId: 'EMP-004', type: 'Paternity Leave', total: 7, used: 0, remaining: 7 },
+  // EMP-005 Liza Gomez
+  { employeeId: 'EMP-005', type: 'Vacation Leave', total: 15, used: 8, remaining: 7 },
+  { employeeId: 'EMP-005', type: 'Sick Leave', total: 15, used: 5, remaining: 10 },
+  { employeeId: 'EMP-005', type: 'Emergency Leave', total: 5, used: 0, remaining: 5 },
+  { employeeId: 'EMP-005', type: 'Maternity Leave', total: 105, used: 0, remaining: 105 },
+  { employeeId: 'EMP-005', type: 'Paternity Leave', total: 0, used: 0, remaining: 0 },
+  // EMP-006 Roberto Villanueva
+  { employeeId: 'EMP-006', type: 'Vacation Leave', total: 15, used: 2, remaining: 13 },
+  { employeeId: 'EMP-006', type: 'Sick Leave', total: 15, used: 3, remaining: 12 },
+  { employeeId: 'EMP-006', type: 'Emergency Leave', total: 5, used: 1, remaining: 4 },
+  { employeeId: 'EMP-006', type: 'Maternity Leave', total: 0, used: 0, remaining: 0 },
+  { employeeId: 'EMP-006', type: 'Paternity Leave', total: 7, used: 0, remaining: 7 },
+  // EMP-006 Roberto Villanueva
+  { employeeId: 'EMP-007', type: 'Vacation Leave', total: 15, used: 0, remaining: 15 },
+  { employeeId: 'EMP-007', type: 'Sick Leave', total: 15, used: 0, remaining: 15 },
+  { employeeId: 'EMP-007', type: 'Emergency Leave', total: 5, used: 0, remaining: 5 },
+  { employeeId: 'EMP-007', type: 'Maternity Leave', total: 0, used: 0, remaining: 0 },
+  { employeeId: 'EMP-007', type: 'Paternity Leave', total: 7, used: 0, remaining: 7 },
+]

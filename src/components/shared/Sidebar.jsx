@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import {
   LayoutDashboard,
   Users,
@@ -8,6 +8,7 @@ import {
   Settings,
   Building2,
   LogOut,
+  UserCircle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
@@ -61,6 +62,17 @@ export function Sidebar() {
 
       <Separator className="bg-slate-800" />
 
+      {/* Portal Link */}
+      <div className="px-3 py-2">
+        <Link
+          to="/portal/login"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium text-slate-500 hover:text-slate-200 hover:bg-slate-800/60 transition-all"
+        >
+          <UserCircle size={17} className="shrink-0" />
+          <span>Employee Portal</span>
+        </Link>
+      </div>
+
       {/* Footer */}
       <div className="px-4 py-4">
         <div className="flex items-center gap-3">
@@ -79,3 +91,4 @@ export function Sidebar() {
     </aside>
   )
 }
+
