@@ -1,36 +1,35 @@
-import { cn } from '@/lib/utils'
+import { Badge } from '@/components/ui/badge'
 
 const STATUS_MAP = {
   // Employee
-  Active: 'badge-success',
-  'On Leave': 'badge-warning',
-  Inactive: 'badge-neutral',
-  Terminated: 'badge-destructive',
-  Probationary: 'badge-info',
+  Active: 'success',
+  'On Leave': 'warning',
+  Inactive: 'secondary',
+  Terminated: 'destructive',
+  Probationary: 'info',
 
   // Payroll
-  Draft: 'badge-neutral',
-  Processed: 'badge-info',
-  Released: 'badge-success',
-  Cancelled: 'badge-destructive',
+  Draft: 'secondary',
+  Processed: 'info',
+  Released: 'success',
+  Cancelled: 'destructive',
 
   // Attendance
-  Present: 'badge-success',
-  Absent: 'badge-destructive',
-  Late: 'badge-warning',
-  'On Leave': 'badge-warning',
-  Holiday: 'badge-info',
+  Present: 'success',
+  Absent: 'destructive',
+  Late: 'warning',
+  Holiday: 'info',
 
   // Leave
-  Approved: 'badge-success',
-  Pending: 'badge-warning',
-  Rejected: 'badge-destructive',
+  Approved: 'success',
+  Pending: 'warning',
+  Rejected: 'destructive',
 
   // Employment type
-  Regular: 'badge-success',
+  Regular: 'success',
 }
 
 export function StatusBadge({ status, className }) {
-  const variant = STATUS_MAP[status] ?? 'badge-neutral'
-  return <span className={cn('badge', variant, className)}>{status}</span>
+  const variant = STATUS_MAP[status] ?? 'secondary'
+  return <Badge variant={variant} className={className}>{status}</Badge>
 }

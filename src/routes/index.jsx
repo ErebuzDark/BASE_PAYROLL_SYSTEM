@@ -11,8 +11,7 @@ const SettingsPage   = lazy(() => import('@/pages/SettingsPage'))
 
 const Loader = () => (
   <div className="flex items-center justify-center h-64">
-    <div className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin"
-      style={{ borderColor: 'var(--color-primary)', borderTopColor: 'transparent' }} />
+    <div className="w-6 h-6 rounded-full border-2 border-slate-800 border-t-transparent animate-spin" />
   </div>
 )
 

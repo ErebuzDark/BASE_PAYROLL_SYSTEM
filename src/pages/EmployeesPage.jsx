@@ -1,7 +1,17 @@
 import { useState } from 'react'
-import { Search, Plus, Pencil, Trash2, X, User } from 'lucide-react'
+import { Search, Plus, Pencil, Trash2, User } from 'lucide-react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { NativeSelect } from '@/components/ui/select'
+import { Card } from '@/components/ui/card'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import {
+  Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription,
+} from '@/components/ui/dialog'
 import { useEmployees, useCreateEmployee, useUpdateEmployee, useDeleteEmployee, useDepartments } from '@/features/employees/hooks/useEmployees'
 import { formatCurrency, formatDate } from '@/lib/utils'
 
@@ -33,10 +43,9 @@ function EmployeeModal({ employee, onClose, departments }) {
   }
 
   const field = (label, name, type = 'text', opts = {}) => (
-    <div>
-      <label className="form-label">{label}</label>
-      <input
-        className="form-input"
+    <div className="space-y-1.5">
+      <Label>{label}</Label>
+      <Input
         name={name}
         type={type}
         value={form[name]}
@@ -48,20 +57,20 @@ function EmployeeModal({ employee, onClose, departments }) {
   )
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.4)' }}>
-      <div className="w-full max-w-2xl rounded-xl shadow-2xl overflow-hidden" style={{ background: 'var(--color-surface)' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
-          <h2 className="text-base font-semibold">{isEdit ? 'Edit Employee' : 'Add New Employee'}</h2>
-          <button className="btn btn-ghost p-1" onClick={onClose}><X size={18} /></button>
-        </div>
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{isEdit ? 'Edit Employee' : 'Add New Employee'}</DialogTitle>
+          <DialogDescription className="sr-only">
+            {isEdit ? 'Update employee information' : 'Enter details for the new employee'}
+          </DialogDescription>
+        </DialogHeader>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="overflow-y-auto" style={{ maxHeight: '75vh' }}>
-          <div className="px-6 py-5 space-y-5">
+        <form onSubmit={handleSubmit} className="overflow-y-auto max-h-[75vh]">
+          <div className="px-6 py-5 space-y-6">
             {/* Personal Info */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--color-neutral-500)' }}>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                 Personal Information
               </p>
               <div className="grid grid-cols-2 gap-4">
@@ -74,26 +83,26 @@ function EmployeeModal({ employee, onClose, departments }) {
 
             {/* Employment */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--color-neutral-500)' }}>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                 Employment Details
               </p>
               <div className="grid grid-cols-2 gap-4">
                 {field('Position', 'position')}
-                <div>
-                  <label className="form-label">Department</label>
-                  <select className="form-select" name="department" value={form.department} onChange={handleChange} required>
+                <div className="space-y-1.5">
+                  <Label>Department</Label>
+                  <NativeSelect name="department" value={form.department} onChange={handleChange} required>
                     <option value="">Select department</option>
                     {departments?.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
-                  </select>
+                  </NativeSelect>
                 </div>
-                <div>
-                  <label className="form-label">Employment Type</label>
-                  <select className="form-select" name="employmentType" value={form.employmentType} onChange={handleChange}>
+                <div className="space-y-1.5">
+                  <Label>Employment Type</Label>
+                  <NativeSelect name="employmentType" value={form.employmentType} onChange={handleChange}>
                     <option>Regular</option>
                     <option>Probationary</option>
                     <option>Contractual</option>
                     <option>Part-time</option>
-                  </select>
+                  </NativeSelect>
                 </div>
                 {field('Basic Salary (₱)', 'basicSalary', 'number', { min: 0 })}
               </div>
@@ -101,7 +110,7 @@ function EmployeeModal({ employee, onClose, departments }) {
 
             {/* Government IDs */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-wide mb-3" style={{ color: 'var(--color-neutral-500)' }}>
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
                 Government IDs & Banking
               </p>
               <div className="grid grid-cols-2 gap-4">
@@ -114,15 +123,15 @@ function EmployeeModal({ employee, onClose, departments }) {
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 px-6 py-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-            <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={isPending}>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={isPending}>
               {isPending ? 'Saving...' : isEdit ? 'Save Changes' : 'Add Employee'}
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -130,8 +139,7 @@ export default function EmployeesPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [deptFilter, setDeptFilter] = useState('')
-  const [modalEmp, setModalEmp] = useState(null) // null=closed, {}=new, emp=edit
-  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [modalEmp, setModalEmp] = useState(null)
 
   const { data: employees = [], isLoading } = useEmployees({ search, status: statusFilter, department: deptFilter })
   const { data: departments = [] } = useDepartments()
@@ -149,114 +157,112 @@ export default function EmployeesPage() {
         title="Employees"
         subtitle={`${employees.length} employee${employees.length !== 1 ? 's' : ''}`}
         actions={
-          <button className="btn btn-primary" onClick={() => setModalEmp({})}>
+          <Button onClick={() => setModalEmp({})}>
             <Plus size={16} /> Add Employee
-          </button>
+          </Button>
         }
       />
 
       {/* Filters */}
       <div className="flex gap-3 mb-5">
         <div className="relative flex-1 max-w-xs">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--color-neutral-400)' }} />
-          <input
-            className="form-input pl-9"
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Input
+            className="pl-9"
             placeholder="Search employees..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <select className="form-select w-40" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+        <NativeSelect className="w-40" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
           <option value="">All Status</option>
           <option>Active</option>
           <option>On Leave</option>
           <option>Inactive</option>
-        </select>
-        <select className="form-select w-44" value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}>
+        </NativeSelect>
+        <NativeSelect className="w-44" value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)}>
           <option value="">All Departments</option>
           {departments.map((d) => <option key={d.id} value={d.name}>{d.name}</option>)}
-        </select>
+        </NativeSelect>
       </div>
 
       {/* Table */}
-      <div className="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th>Position</th>
-              <th>Department</th>
-              <th>Type</th>
-              <th>Basic Salary</th>
-              <th>Status</th>
-              <th>Hire Date</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
+      <Card className="overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Employee</TableHead>
+              <TableHead>Position</TableHead>
+              <TableHead>Department</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Basic Salary</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Hire Date</TableHead>
+              <TableHead></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {isLoading ? (
               [...Array(5)].map((_, i) => (
-                <tr key={i}>
+                <TableRow key={i}>
                   {[...Array(8)].map((_, j) => (
-                    <td key={j}>
-                      <div className="h-4 rounded animate-pulse" style={{ background: 'var(--color-neutral-200)', width: j === 0 ? 140 : 80 }} />
-                    </td>
+                    <TableCell key={j}>
+                      <div className="h-4 rounded bg-slate-100 animate-pulse" style={{ width: j === 0 ? 140 : 80 }} />
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))
             ) : employees.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="text-center py-12" style={{ color: 'var(--color-neutral-400)' }}>
+              <TableRow className="hover:bg-transparent">
+                <TableCell colSpan={8} className="text-center py-12 text-slate-400">
                   <User size={32} className="mx-auto mb-2 opacity-30" />
                   No employees found
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               employees.map((emp) => (
-                <tr key={emp.id}>
-                  <td>
+                <TableRow key={emp.id}>
+                  <TableCell>
                     <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                        style={{ background: 'var(--color-primary)', color: 'white' }}
-                      >
-                        {emp.firstName[0]}{emp.lastName[0]}
-                      </div>
+                      <Avatar>
+                        <AvatarFallback>{emp.firstName[0]}{emp.lastName[0]}</AvatarFallback>
+                      </Avatar>
                       <div>
-                        <p className="font-medium text-sm" style={{ color: 'var(--color-neutral-900)' }}>
+                        <p className="font-medium text-sm text-slate-900">
                           {emp.firstName} {emp.lastName}
                         </p>
-                        <p className="text-xs" style={{ color: 'var(--color-neutral-500)' }}>{emp.id}</p>
+                        <p className="text-xs text-slate-400">{emp.id}</p>
                       </div>
                     </div>
-                  </td>
-                  <td>{emp.position}</td>
-                  <td>{emp.department}</td>
-                  <td><StatusBadge status={emp.employmentType} /></td>
-                  <td className="font-medium">{formatCurrency(emp.basicSalary)}</td>
-                  <td><StatusBadge status={emp.status} /></td>
-                  <td>{formatDate(emp.hireDate)}</td>
-                  <td>
+                  </TableCell>
+                  <TableCell>{emp.position}</TableCell>
+                  <TableCell>{emp.department}</TableCell>
+                  <TableCell><StatusBadge status={emp.employmentType} /></TableCell>
+                  <TableCell className="font-medium text-slate-800">{formatCurrency(emp.basicSalary)}</TableCell>
+                  <TableCell><StatusBadge status={emp.status} /></TableCell>
+                  <TableCell>{formatDate(emp.hireDate)}</TableCell>
+                  <TableCell>
                     <div className="flex items-center gap-1">
-                      <button className="btn btn-ghost p-1.5" onClick={() => setModalEmp(emp)} title="Edit">
+                      <Button variant="ghost" size="icon" onClick={() => setModalEmp(emp)} title="Edit">
                         <Pencil size={14} />
-                      </button>
-                      <button
-                        className="btn btn-ghost p-1.5"
-                        style={{ color: 'var(--color-destructive)' }}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
                         onClick={() => handleDelete(emp)}
                         title="Delete"
                       >
                         <Trash2 size={14} />
-                      </button>
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             )}
-          </tbody>
-        </table>
-      </div>
+          </TableBody>
+        </Table>
+      </Card>
 
       {modalEmp !== null && (
         <EmployeeModal

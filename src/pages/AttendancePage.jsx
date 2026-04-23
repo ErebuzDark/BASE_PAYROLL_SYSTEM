@@ -1,7 +1,15 @@
 import { useState } from 'react'
-import { Clock, Calendar, CheckCircle2, XCircle, Plus, X } from 'lucide-react'
+import { Clock, Calendar, CheckCircle2, XCircle, Plus } from 'lucide-react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatusBadge } from '@/components/shared/StatusBadge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { NativeSelect } from '@/components/ui/select'
+import { Card, CardContent } from '@/components/ui/card'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { useAttendance, useLeaves, useUpdateLeaveStatus, useCreateAttendance, useCreateLeave } from '@/features/attendance/hooks/useAttendance'
 import { useEmployees } from '@/features/employees/hooks/useEmployees'
 import { formatDate } from '@/lib/utils'
@@ -19,69 +27,45 @@ function LogAttendanceModal({ onClose, employees }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.4)' }}>
-      <div className="w-full max-w-md rounded-xl shadow-2xl overflow-hidden" style={{ background: 'var(--color-surface)' }}>
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
-          <h2 className="text-base font-semibold">Log Attendance</h2>
-          <button className="btn btn-ghost p-1" onClick={onClose}><X size={18} /></button>
-        </div>
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>Log Attendance</DialogTitle>
+          <DialogDescription className="sr-only">Record attendance</DialogDescription>
+        </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="px-6 py-5 space-y-4">
-            <div>
-              <label className="form-label">Employee</label>
-              <select className="form-select" required value={form.employeeId}
-                onChange={(e) => setForm(f => ({ ...f, employeeId: e.target.value }))}>
+            <div className="space-y-1.5">
+              <Label>Employee</Label>
+              <NativeSelect required value={form.employeeId} onChange={(e) => setForm(f => ({ ...f, employeeId: e.target.value }))}>
                 <option value="">Select employee</option>
-                {employees.map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>
-                ))}
-              </select>
+                {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>))}
+              </NativeSelect>
             </div>
-            <div>
-              <label className="form-label">Date</label>
-              <input className="form-input" type="date" required value={form.date}
-                onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))} />
+            <div className="space-y-1.5">
+              <Label>Date</Label>
+              <Input type="date" required value={form.date} onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))} />
             </div>
-            <div>
-              <label className="form-label">Status</label>
-              <select className="form-select" value={form.status}
-                onChange={(e) => setForm(f => ({
-                  ...f,
-                  status: e.target.value,
-                  ...(e.target.value === 'Absent' || e.target.value === 'On Leave'
-                    ? { timeIn: '', timeOut: '' }
-                    : { timeIn: f.timeIn || '08:00', timeOut: f.timeOut || '17:00' }),
-                }))}>
-                <option>Present</option>
-                <option>Late</option>
-                <option>Absent</option>
-                <option>On Leave</option>
-              </select>
+            <div className="space-y-1.5">
+              <Label>Status</Label>
+              <NativeSelect value={form.status} onChange={(e) => setForm(f => ({ ...f, status: e.target.value, ...(e.target.value === 'Absent' || e.target.value === 'On Leave' ? { timeIn: '', timeOut: '' } : { timeIn: f.timeIn || '08:00', timeOut: f.timeOut || '17:00' }) }))}>
+                <option>Present</option><option>Late</option><option>Absent</option><option>On Leave</option>
+              </NativeSelect>
             </div>
             {(form.status === 'Present' || form.status === 'Late') && (
               <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="form-label">Time In</label>
-                  <input className="form-input" type="time" required value={form.timeIn}
-                    onChange={(e) => setForm(f => ({ ...f, timeIn: e.target.value }))} />
-                </div>
-                <div>
-                  <label className="form-label">Time Out</label>
-                  <input className="form-input" type="time" required value={form.timeOut}
-                    onChange={(e) => setForm(f => ({ ...f, timeOut: e.target.value }))} />
-                </div>
+                <div className="space-y-1.5"><Label>Time In</Label><Input type="time" required value={form.timeIn} onChange={(e) => setForm(f => ({ ...f, timeIn: e.target.value }))} /></div>
+                <div className="space-y-1.5"><Label>Time Out</Label><Input type="time" required value={form.timeOut} onChange={(e) => setForm(f => ({ ...f, timeOut: e.target.value }))} /></div>
               </div>
             )}
           </div>
-          <div className="flex justify-end gap-3 px-6 py-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-            <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={createAtt.isPending}>
-              {createAtt.isPending ? 'Saving...' : 'Log Attendance'}
-            </button>
-          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={createAtt.isPending}>{createAtt.isPending ? 'Saving...' : 'Log Attendance'}</Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -95,62 +79,43 @@ function FileLeaveModal({ onClose, employees }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.4)' }}>
-      <div className="w-full max-w-md rounded-xl shadow-2xl overflow-hidden" style={{ background: 'var(--color-surface)' }}>
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
-          <h2 className="text-base font-semibold">File Leave Request</h2>
-          <button className="btn btn-ghost p-1" onClick={onClose}><X size={18} /></button>
-        </div>
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle>File Leave Request</DialogTitle>
+          <DialogDescription className="sr-only">Submit a leave request</DialogDescription>
+        </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="px-6 py-5 space-y-4">
-            <div>
-              <label className="form-label">Employee</label>
-              <select className="form-select" required value={form.employeeId}
-                onChange={(e) => setForm(f => ({ ...f, employeeId: e.target.value }))}>
+            <div className="space-y-1.5">
+              <Label>Employee</Label>
+              <NativeSelect required value={form.employeeId} onChange={(e) => setForm(f => ({ ...f, employeeId: e.target.value }))}>
                 <option value="">Select employee</option>
-                {employees.map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>
-                ))}
-              </select>
+                {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.firstName} {emp.lastName}</option>))}
+              </NativeSelect>
             </div>
-            <div>
-              <label className="form-label">Leave Type</label>
-              <select className="form-select" value={form.type}
-                onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))}>
-                <option>Vacation Leave</option>
-                <option>Sick Leave</option>
-                <option>Emergency Leave</option>
-                <option>Maternity Leave</option>
-                <option>Paternity Leave</option>
-              </select>
+            <div className="space-y-1.5">
+              <Label>Leave Type</Label>
+              <NativeSelect value={form.type} onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))}>
+                <option>Vacation Leave</option><option>Sick Leave</option><option>Emergency Leave</option><option>Maternity Leave</option><option>Paternity Leave</option>
+              </NativeSelect>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="form-label">Start Date</label>
-                <input className="form-input" type="date" required value={form.startDate}
-                  onChange={(e) => setForm(f => ({ ...f, startDate: e.target.value }))} />
-              </div>
-              <div>
-                <label className="form-label">End Date</label>
-                <input className="form-input" type="date" required value={form.endDate}
-                  onChange={(e) => setForm(f => ({ ...f, endDate: e.target.value }))} />
-              </div>
+              <div className="space-y-1.5"><Label>Start Date</Label><Input type="date" required value={form.startDate} onChange={(e) => setForm(f => ({ ...f, startDate: e.target.value }))} /></div>
+              <div className="space-y-1.5"><Label>End Date</Label><Input type="date" required value={form.endDate} onChange={(e) => setForm(f => ({ ...f, endDate: e.target.value }))} /></div>
             </div>
-            <div>
-              <label className="form-label">Reason</label>
-              <input className="form-input" required placeholder="Brief reason for leave"
-                value={form.reason} onChange={(e) => setForm(f => ({ ...f, reason: e.target.value }))} />
+            <div className="space-y-1.5">
+              <Label>Reason</Label>
+              <Input required placeholder="Brief reason for leave" value={form.reason} onChange={(e) => setForm(f => ({ ...f, reason: e.target.value }))} />
             </div>
           </div>
-          <div className="flex justify-end gap-3 px-6 py-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-            <button type="button" className="btn btn-outline" onClick={onClose}>Cancel</button>
-            <button type="submit" className="btn btn-primary" disabled={createLv.isPending}>
-              {createLv.isPending ? 'Filing...' : 'File Leave'}
-            </button>
-          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
+            <Button type="submit" disabled={createLv.isPending}>{createLv.isPending ? 'Filing...' : 'File Leave'}</Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -159,217 +124,87 @@ export default function AttendancePage() {
   const [dateFilter, setDateFilter] = useState('')
   const [showLogModal, setShowLogModal] = useState(false)
   const [showLeaveModal, setShowLeaveModal] = useState(false)
-
   const { data: attendance = [], isLoading: attLoading } = useAttendance(dateFilter ? { date: dateFilter } : {})
   const { data: leaves = [], isLoading: leaveLoading } = useLeaves({})
   const { data: employees = [] } = useEmployees({})
   const updateLeave = useUpdateLeaveStatus()
-
   const getEmployee = (id) => employees.find(e => e.id === id)
+  const pendingCount = leaves.filter(l => l.status === 'Pending').length
 
   return (
     <div>
-      <PageHeader
-        title="Attendance & Leaves"
-        subtitle="Track daily attendance and manage leave requests"
-        actions={
-          <div className="flex gap-2">
-            <button className="btn btn-outline" onClick={() => setShowLeaveModal(true)}>
-              <Calendar size={15} /> File Leave
-            </button>
-            <button className="btn btn-primary" onClick={() => setShowLogModal(true)}>
-              <Plus size={15} /> Log Attendance
-            </button>
-          </div>
-        }
-      />
+      <PageHeader title="Attendance & Leaves" subtitle="Track daily attendance and manage leave requests"
+        actions={<div className="flex gap-2"><Button variant="outline" onClick={() => setShowLeaveModal(true)}><Calendar size={15} /> File Leave</Button><Button onClick={() => setShowLogModal(true)}><Plus size={15} /> Log Attendance</Button></div>} />
 
-      {/* Tab Bar */}
-      <div className="flex gap-1 mb-6 p-1 rounded-lg w-fit" style={{ background: 'var(--color-neutral-200)' }}>
+      <div className="flex gap-1 mb-6 p-1 rounded-lg w-fit bg-slate-100 border border-slate-200">
         {TABS.map((t, i) => (
-          <button
-            key={t}
-            className="px-4 py-2 text-sm font-medium rounded-md transition-all"
-            style={{
-              background: tab === i ? 'var(--color-surface)' : 'transparent',
-              color: tab === i ? 'var(--color-neutral-900)' : 'var(--color-neutral-500)',
-              boxShadow: tab === i ? '0 1px 3px rgba(0,0,0,0.08)' : 'none',
-            }}
-            onClick={() => setTab(i)}
-          >
-            {t === 'Attendance Log' ? <Clock size={14} className="inline mr-2" /> : <Calendar size={14} className="inline mr-2" />}
-            {t}
-            {t === 'Leave Requests' && leaves.filter(l => l.status === 'Pending').length > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 rounded-full text-xs font-bold"
-                style={{ background: 'var(--color-warning)', color: 'white' }}>
-                {leaves.filter(l => l.status === 'Pending').length}
-              </span>
-            )}
+          <button key={t} className={`px-4 py-2 text-sm font-medium rounded-md transition-all flex items-center gap-2 cursor-pointer ${tab === i ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`} onClick={() => setTab(i)}>
+            {t === 'Attendance Log' ? <Clock size={14} /> : <Calendar size={14} />}{t}
+            {t === 'Leave Requests' && pendingCount > 0 && <span className="ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white">{pendingCount}</span>}
           </button>
         ))}
       </div>
 
-      {/* Attendance Log Tab */}
       {tab === 0 && (
         <div>
-          {/* Summary */}
           <div className="grid grid-cols-4 gap-4 mb-5">
-            {[
-              { label: 'Present', count: attendance.filter(a => a.status === 'Present').length, color: 'var(--color-success)' },
-              { label: 'Late', count: attendance.filter(a => a.status === 'Late').length, color: 'var(--color-warning)' },
-              { label: 'Absent', count: attendance.filter(a => a.status === 'Absent').length, color: 'var(--color-destructive)' },
-              { label: 'On Leave', count: attendance.filter(a => a.status === 'On Leave').length, color: 'var(--color-info)' },
-            ].map(({ label, count, color }) => (
-              <div key={label} className="stat-card text-center">
-                <p className="text-2xl font-bold" style={{ color }}>{count}</p>
-                <p className="text-xs mt-1" style={{ color: 'var(--color-neutral-500)' }}>{label}</p>
-              </div>
+            {[{ label: 'Present', count: attendance.filter(a => a.status === 'Present').length, color: 'text-emerald-600' }, { label: 'Late', count: attendance.filter(a => a.status === 'Late').length, color: 'text-amber-600' }, { label: 'Absent', count: attendance.filter(a => a.status === 'Absent').length, color: 'text-red-600' }, { label: 'On Leave', count: attendance.filter(a => a.status === 'On Leave').length, color: 'text-blue-600' }].map(({ label, count, color }) => (
+              <Card key={label}><CardContent className="p-5 text-center"><p className={`text-2xl font-bold ${color}`}>{count}</p><p className="text-xs mt-1 text-slate-500">{label}</p></CardContent></Card>
             ))}
           </div>
-
-          {/* Filter */}
-          <div className="flex gap-3 mb-4">
-            <div>
-              <label className="form-label">Filter by Date</label>
-              <input className="form-input w-44" type="date" value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)} />
-            </div>
-            {dateFilter && (
-              <div className="flex items-end">
-                <button className="btn btn-outline text-xs" onClick={() => setDateFilter('')}>Clear</button>
-              </div>
-            )}
+          <div className="flex gap-3 mb-4 items-end">
+            <div className="space-y-1.5"><Label>Filter by Date</Label><Input className="w-44" type="date" value={dateFilter} onChange={(e) => setDateFilter(e.target.value)} /></div>
+            {dateFilter && <Button variant="outline" size="sm" onClick={() => setDateFilter('')}>Clear</Button>}
           </div>
-
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Employee</th>
-                  <th>Date</th>
-                  <th>Time In</th>
-                  <th>Time Out</th>
-                  <th>Hours Worked</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {attLoading ? (
-                  [...Array(4)].map((_, i) => (
-                    <tr key={i}>
-                      {[...Array(6)].map((_, j) => (
-                        <td key={j}><div className="h-4 rounded animate-pulse" style={{ background: 'var(--color-neutral-200)', width: 80 }} /></td>
-                      ))}
-                    </tr>
-                  ))
-                ) : attendance.map((att) => {
-                  const emp = getEmployee(att.employeeId)
-                  return (
-                    <tr key={att.id}>
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                            style={{ background: 'var(--color-primary)', color: 'white' }}>
-                            {emp ? `${emp.firstName[0]}${emp.lastName[0]}` : '?'}
-                          </div>
-                          <span className="text-sm font-medium">{emp ? `${emp.firstName} ${emp.lastName}` : att.employeeId}</span>
-                        </div>
-                      </td>
-                      <td>{formatDate(att.date)}</td>
-                      <td>{att.timeIn ?? <span style={{ color: 'var(--color-neutral-400)' }}>—</span>}</td>
-                      <td>{att.timeOut ?? <span style={{ color: 'var(--color-neutral-400)' }}>—</span>}</td>
-                      <td>{att.hoursWorked > 0 ? `${att.hoursWorked}h` : <span style={{ color: 'var(--color-neutral-400)' }}>—</span>}</td>
-                      <td><StatusBadge status={att.status} /></td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
+          <Card className="overflow-hidden">
+            <Table>
+              <TableHeader><TableRow className="hover:bg-transparent"><TableHead>Employee</TableHead><TableHead>Date</TableHead><TableHead>Time In</TableHead><TableHead>Time Out</TableHead><TableHead>Hours Worked</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
+              <TableBody>
+                {attLoading ? [...Array(4)].map((_, i) => (<TableRow key={i}>{[...Array(6)].map((_, j) => (<TableCell key={j}><div className="h-4 rounded bg-slate-100 animate-pulse" style={{ width: 80 }} /></TableCell>))}</TableRow>))
+                : attendance.map((att) => { const emp = getEmployee(att.employeeId); return (
+                  <TableRow key={att.id}>
+                    <TableCell><div className="flex items-center gap-2"><Avatar className="h-7 w-7"><AvatarFallback className="text-[10px]">{emp ? `${emp.firstName[0]}${emp.lastName[0]}` : '?'}</AvatarFallback></Avatar><span className="text-sm font-medium text-slate-800">{emp ? `${emp.firstName} ${emp.lastName}` : att.employeeId}</span></div></TableCell>
+                    <TableCell>{formatDate(att.date)}</TableCell>
+                    <TableCell>{att.timeIn ?? <span className="text-slate-400">—</span>}</TableCell>
+                    <TableCell>{att.timeOut ?? <span className="text-slate-400">—</span>}</TableCell>
+                    <TableCell>{att.hoursWorked > 0 ? `${att.hoursWorked}h` : <span className="text-slate-400">—</span>}</TableCell>
+                    <TableCell><StatusBadge status={att.status} /></TableCell>
+                  </TableRow>
+                )})}
+              </TableBody>
+            </Table>
+          </Card>
         </div>
       )}
 
-      {/* Leave Requests Tab */}
       {tab === 1 && (
-        <div>
-          <div className="table-wrapper">
-            <table>
-              <thead>
-                <tr>
-                  <th>Employee</th>
-                  <th>Leave Type</th>
-                  <th>Start Date</th>
-                  <th>End Date</th>
-                  <th>Days</th>
-                  <th>Reason</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {leaveLoading ? (
-                  [...Array(3)].map((_, i) => (
-                    <tr key={i}>
-                      {[...Array(8)].map((_, j) => (
-                        <td key={j}><div className="h-4 rounded animate-pulse" style={{ background: 'var(--color-neutral-200)', width: 80 }} /></td>
-                      ))}
-                    </tr>
-                  ))
-                ) : leaves.map((leave) => {
-                  const emp = getEmployee(leave.employeeId)
-                  return (
-                    <tr key={leave.id}>
-                      <td>
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                            style={{ background: 'var(--color-primary)', color: 'white' }}>
-                            {emp ? `${emp.firstName[0]}${emp.lastName[0]}` : '?'}
-                          </div>
-                          <span className="text-sm font-medium">{emp ? `${emp.firstName} ${emp.lastName}` : leave.employeeId}</span>
-                        </div>
-                      </td>
-                      <td>{leave.type}</td>
-                      <td>{formatDate(leave.startDate)}</td>
-                      <td>{formatDate(leave.endDate)}</td>
-                      <td><span className="font-medium">{leave.days} day{leave.days !== 1 ? 's' : ''}</span></td>
-                      <td>
-                        <span className="text-xs max-w-[140px] block truncate" style={{ color: 'var(--color-neutral-600)' }}
-                          title={leave.reason}>{leave.reason}</span>
-                      </td>
-                      <td><StatusBadge status={leave.status} /></td>
-                      <td>
-                        {leave.status === 'Pending' ? (
-                          <div className="flex items-center gap-1">
-                            <button
-                              className="btn btn-ghost p-1.5"
-                              style={{ color: 'var(--color-success)' }}
-                              disabled={updateLeave.isPending}
-                              onClick={() => updateLeave.mutate({ id: leave.id, status: 'Approved' })}
-                              title="Approve"
-                            >
-                              <CheckCircle2 size={15} />
-                            </button>
-                            <button
-                              className="btn btn-ghost p-1.5"
-                              style={{ color: 'var(--color-destructive)' }}
-                              disabled={updateLeave.isPending}
-                              onClick={() => updateLeave.mutate({ id: leave.id, status: 'Rejected' })}
-                              title="Reject"
-                            >
-                              <XCircle size={15} />
-                            </button>
-                          </div>
-                        ) : (
-                          <span className="text-xs" style={{ color: 'var(--color-neutral-400)' }}>—</span>
-                        )}
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <Card className="overflow-hidden">
+          <Table>
+            <TableHeader><TableRow className="hover:bg-transparent"><TableHead>Employee</TableHead><TableHead>Leave Type</TableHead><TableHead>Start Date</TableHead><TableHead>End Date</TableHead><TableHead>Days</TableHead><TableHead>Reason</TableHead><TableHead>Status</TableHead><TableHead>Actions</TableHead></TableRow></TableHeader>
+            <TableBody>
+              {leaveLoading ? [...Array(3)].map((_, i) => (<TableRow key={i}>{[...Array(8)].map((_, j) => (<TableCell key={j}><div className="h-4 rounded bg-slate-100 animate-pulse" style={{ width: 80 }} /></TableCell>))}</TableRow>))
+              : leaves.map((leave) => { const emp = getEmployee(leave.employeeId); return (
+                <TableRow key={leave.id}>
+                  <TableCell><div className="flex items-center gap-2"><Avatar className="h-7 w-7"><AvatarFallback className="text-[10px]">{emp ? `${emp.firstName[0]}${emp.lastName[0]}` : '?'}</AvatarFallback></Avatar><span className="text-sm font-medium text-slate-800">{emp ? `${emp.firstName} ${emp.lastName}` : leave.employeeId}</span></div></TableCell>
+                  <TableCell>{leave.type}</TableCell>
+                  <TableCell>{formatDate(leave.startDate)}</TableCell>
+                  <TableCell>{formatDate(leave.endDate)}</TableCell>
+                  <TableCell><span className="font-medium">{leave.days} day{leave.days !== 1 ? 's' : ''}</span></TableCell>
+                  <TableCell><span className="text-xs max-w-[140px] block truncate text-slate-500" title={leave.reason}>{leave.reason}</span></TableCell>
+                  <TableCell><StatusBadge status={leave.status} /></TableCell>
+                  <TableCell>
+                    {leave.status === 'Pending' ? (
+                      <div className="flex items-center gap-1">
+                        <Button variant="ghost" size="icon" className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50" disabled={updateLeave.isPending} onClick={() => updateLeave.mutate({ id: leave.id, status: 'Approved' })} title="Approve"><CheckCircle2 size={15} /></Button>
+                        <Button variant="ghost" size="icon" className="text-red-600 hover:text-red-700 hover:bg-red-50" disabled={updateLeave.isPending} onClick={() => updateLeave.mutate({ id: leave.id, status: 'Rejected' })} title="Reject"><XCircle size={15} /></Button>
+                      </div>
+                    ) : <span className="text-xs text-slate-400">—</span>}
+                  </TableCell>
+                </TableRow>
+              )})}
+            </TableBody>
+          </Table>
+        </Card>
       )}
 
       {showLogModal && <LogAttendanceModal onClose={() => setShowLogModal(false)} employees={employees} />}
